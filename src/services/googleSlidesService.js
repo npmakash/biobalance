@@ -6,10 +6,7 @@ import { CONFIG } from '../config';
  */
 
 export async function generateGoogleSlidePdf(placeholdersData) {
-  const scriptUrl =
-    CONFIG.GOOGLE_APPS_SCRIPT_URL ||
-    localStorage.getItem('biobalance_apps_script_url') ||
-    'https://script.google.com/macros/s/AKfycbyxsM-3soYvejTXvCGBcvKYX3zlInmkeF8QIaWUH8GbJgRw9yA2SBM_TptYNlwNJ-f8-w/exec';
+  const scriptUrl = CONFIG.GOOGLE_APPS_SCRIPT_URL;
 
   if (!scriptUrl) {
     throw new Error('Google Apps Script Web App URL is not configured.');

@@ -18,7 +18,7 @@ export const CONFIG = {
   // Provided Gemini API Key
   GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY || getDefaultApiKey(),
 
-  // Provided Live Google Apps Script Web App URL for Google Drive presentation duplication & placeholder replacement
+  // Hardcoded Live Google Apps Script Web App URL for Google Drive presentation duplication & placeholder replacement
   GOOGLE_APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyxsM-3soYvejTXvCGBcvKYX3zlInmkeF8QIaWUH8GbJgRw9yA2SBM_TptYNlwNJ-f8-w/exec',
 
   // Official Google Presentation Template Details

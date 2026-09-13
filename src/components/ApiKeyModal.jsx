@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, ShieldCheck, X, Sparkles, Key, Link } from 'lucide-react';
+import { Settings, ShieldCheck, X, Key } from 'lucide-react';
 
 export default function ApiKeyModal({ isOpen, onClose, onSave }) {
   const [apiKey, setApiKey] = useState('');
-  const [appScriptUrl, setAppScriptUrl] = useState('');
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const existingKey = localStorage.getItem('biobalance_gemini_key');
     if (existingKey) setApiKey(existingKey);
-
-    const existingUrl = localStorage.getItem('biobalance_apps_script_url');
-    if (existingUrl) setAppScriptUrl(existingUrl);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -21,12 +17,6 @@ export default function ApiKeyModal({ isOpen, onClose, onSave }) {
       localStorage.setItem('biobalance_gemini_key', apiKey.trim());
     } else {
       localStorage.removeItem('biobalance_gemini_key');
-    }
-
-    if (appScriptUrl.trim()) {
-      localStorage.setItem('biobalance_apps_script_url', appScriptUrl.trim());
-    } else {
-      localStorage.removeItem('biobalance_apps_script_url');
     }
 
     setSaved(true);
@@ -51,7 +41,7 @@ export default function ApiKeyModal({ isOpen, onClose, onSave }) {
         </div>
 
         <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: '1.5' }}>
-          Configure your personal AI Doctor API Key or custom Google Apps Script endpoint.
+          Configure your personal AI Doctor API Key settings.
         </p>
 
         <div className="form-group">
@@ -69,20 +59,6 @@ export default function ApiKeyModal({ isOpen, onClose, onSave }) {
           <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', marginTop: '0.25rem' }}>
             Free API keys start with <code>AIzaSy...</code> from Google AI Studio.
           </span>
-        </div>
-
-        <div className="form-group" style={{ marginTop: '1rem' }}>
-          <label className="form-label">
-            <Link size={16} color="var(--primary-emerald)" />
-            Google Apps Script Web App Endpoint
-          </label>
-          <input
-            type="text"
-            className="form-input"
-            placeholder="https://script.google.com/macros/s/.../exec"
-            value={appScriptUrl}
-            onChange={(e) => setAppScriptUrl(e.target.value)}
-          />
         </div>
 
         {saved && (
@@ -123,7 +99,7 @@ const modalStyles = {
   modalCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: '20px',
-    maxWidth: '500px',
+    maxWidth: '480px',
     width: '100%',
     padding: '1.8rem',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
