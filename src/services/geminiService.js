@@ -1,7 +1,7 @@
 import { CONFIG, getDefaultApiKey } from '../config';
 
 /**
- * Gemini API Service for BioBalance Google Presentation Template Matching
+ * Gemini API Service supporting both API Keys (AIzaSy...) and Bearer Tokens (AQ... / ya29...)
  */
 
 export async function generateDietPlanWithGemini({
@@ -87,48 +87,68 @@ CRITICAL: You MUST return ONLY a VALID JSON object matching these EXACT 24 Googl
 }
 `;
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${cleanApiKey}`;
+  // Detect whether token is Bearer Access Token (AQ... or ya29...) or Standard API Key (AIzaSy...)
+  const isBearerToken = cleanApiKey.startsWith('AQ.') || cleanApiKey.startsWith('ya29.');
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [{ text: prompt }],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.3,
-        responseMimeType: 'application/json',
-      },
-    }),
-  });
+  const headers = {
+    'Content-Type': 'application/json',
+  };
 
-  if (!response.ok) {
-    const errText = await response.text();
-    let msg = `Gemini API returned error (${response.status})`;
+  if (isBearerToken) {
+    headers['Authorization'] = `Bearer ${cleanApiKey}`;
+  }
+
+  // Model endpoints to try in order
+  const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+  let lastError = null;
+
+  for (const modelName of models) {
+    const endpoint = isBearerToken
+      ? `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`
+      : `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanApiKey}`;
+
     try {
-      const parsedErr = JSON.parse(errText);
-      if (parsedErr.error?.message) {
-        msg = `Gemini API Error: ${parsedErr.error.message}`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            responseMimeType: 'application/json',
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        let msg = `Gemini API returned error (${response.status})`;
+        try {
+          const parsedErr = JSON.parse(errText);
+          if (parsedErr.error?.message) {
+            msg = `Gemini API Error: ${parsedErr.error.message}`;
+          }
+        } catch (_) {}
+        lastError = new Error(msg);
+        continue; // try fallback model if error
       }
-    } catch (_) {}
-    throw new Error(msg);
+
+      const data = await response.json();
+      const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!candidateText) {
+        throw new Error('Empty response received from Gemini API.');
+      }
+
+      const parsedJson = JSON.parse(candidateText);
+      return parsedJson;
+    } catch (err) {
+      lastError = err;
+    }
   }
 
-  const data = await response.json();
-  const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!candidateText) {
-    throw new Error('Empty response received from Gemini API.');
-  }
-
-  try {
-    const parsedJson = JSON.parse(candidateText);
-    return parsedJson;
-  } catch (err) {
-    throw new Error('Gemini API returned invalid JSON format.');
-  }
+  throw lastError || new Error('Failed to generate diet plan from Gemini API.');
 }
