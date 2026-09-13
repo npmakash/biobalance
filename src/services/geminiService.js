@@ -1,4 +1,4 @@
-import { CONFIG } from '../config';
+import { CONFIG, getDefaultApiKey } from '../config';
 
 /**
  * Gemini API Service for BioBalance Google Presentation Template Matching
@@ -17,8 +17,9 @@ export async function generateDietPlanWithGemini({
   const cleanApiKey =
     apiKey ||
     localStorage.getItem('biobalance_gemini_key') ||
-    CONFIG.GEMINI_API_KEY ||
     import.meta.env.VITE_GEMINI_API_KEY ||
+    CONFIG.GEMINI_API_KEY ||
+    getDefaultApiKey() ||
     '';
 
   if (!cleanApiKey) {
