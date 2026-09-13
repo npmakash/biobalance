@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import DynamicQuestionnaire from './components/DynamicQuestionnaire';
-import HiddenSlideRenderer from './components/HiddenSlideRenderer';
 import CleanDownloadCard from './components/CleanDownloadCard';
 import ApiKeyModal from './components/ApiKeyModal';
 import { generateDietPlanWithGemini } from './services/geminiService';
-import { Leaf } from 'lucide-react';
+import { Leaf, AlertTriangle } from 'lucide-react';
 
 export default function App() {
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiData, setAiData] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [geminiError, setGeminiError] = useState(null);
 
   // Scroll to questionnaire section when "Plan My Diet" CTA is clicked
   const handleStartPlanning = () => {
@@ -26,6 +26,8 @@ export default function App() {
   const handleQuestionnaireSubmit = async (formData) => {
     setUserData(formData);
     setIsGenerating(true);
+    setGeminiError(null);
+    setAiData(null);
 
     try {
       const apiKey = localStorage.getItem('biobalance_gemini_key') || '';
@@ -50,8 +52,8 @@ export default function App() {
         }
       }, 300);
     } catch (err) {
-      console.error('Failed to generate diet plan:', err);
-      alert('Error generating diet plan. Please try again.');
+      console.error('Gemini API Error:', err);
+      setGeminiError(err.message || 'Failed to generate diet plan from Gemini API.');
     } finally {
       setIsGenerating(false);
     }
@@ -75,8 +77,29 @@ export default function App() {
           />
         </div>
 
-        {/* Hidden Slide Renderer (Off-Screen 16:9 Deck for Crisp PDF Export) */}
-        <HiddenSlideRenderer aiData={aiData} />
+        {/* Explicit Gemini API Error Alert */}
+        {geminiError && (
+          <div className="container" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
+            <div style={appStyles.geminiErrorBox} className="animate-drop-in">
+              <AlertTriangle size={24} color="#DC2626" />
+              <div>
+                <strong style={{ fontSize: '1.05rem', color: '#991B1B' }}>Gemini API Execution Error</strong>
+                <p style={{ fontSize: '0.92rem', color: '#7F1D1D', marginTop: '0.25rem', lineHeight: '1.4' }}>
+                  {geminiError}
+                </p>
+                {geminiError.includes('API Key') && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setIsKeyModalOpen(true)}
+                    style={{ marginTop: '0.75rem', fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                  >
+                    Set Gemini API Key Now
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Clean Single Download Button Card */}
         {aiData && (
@@ -122,6 +145,18 @@ const appStyles = {
     flexDirection: 'column',
     justifyContent: 'space-between',
     backgroundColor: 'var(--bg-main)',
+  },
+  geminiErrorBox: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '1rem',
+    backgroundColor: '#FEF2F2',
+    border: '1.5px solid #FCA5A5',
+    padding: '1.25rem',
+    borderRadius: '16px',
+    maxWidth: '680px',
+    margin: '0 auto',
+    boxShadow: 'var(--shadow-sm)',
   },
   footer: {
     borderTop: '1px solid var(--border-green)',

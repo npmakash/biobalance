@@ -1,37 +1,40 @@
 import { CONFIG } from '../config';
 
 /**
- * Service to replace placeholders in Google Presentation via Google Apps Script Web App.
+ * Service to call Google Apps Script Web App for duplicating Google Presentation 1tI98DhLl4OUOyeFryFDnvOaSgSFP7yYLH878CpSwfZ0,
+ * replacing the 24 placeholders, and downloading the PDF.
  */
 
 export async function generateGoogleSlidePdf(placeholdersData) {
-  const scriptUrl = CONFIG.GOOGLE_APPS_SCRIPT_URL || localStorage.getItem('biobalance_apps_script_url');
+  const scriptUrl =
+    CONFIG.GOOGLE_APPS_SCRIPT_URL ||
+    localStorage.getItem('biobalance_apps_script_url') ||
+    'https://script.google.com/macros/s/AKfycbyxsM-3soYvejTXvCGBcvKYX3zlInmkeF8QIaWUH8GbJgRw9yA2SBM_TptYNlwNJ-f8-w/exec';
 
   if (!scriptUrl) {
-    console.log('Google Apps Script URL not configured.');
-    return null;
+    throw new Error('Google Apps Script Web App URL is not configured.');
   }
 
-  try {
-    const response = await fetch(scriptUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
-      },
-      body: JSON.stringify({
-        templateId: CONFIG.GOOGLE_SLIDES_TEMPLATE_ID,
-        data: placeholdersData,
-      }),
-    });
+  const response = await fetch(scriptUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify({
+      templateId: CONFIG.GOOGLE_SLIDES_TEMPLATE_ID,
+      data: placeholdersData,
+    }),
+  });
 
-    const result = await response.json();
-    if (result && result.status === 'success') {
-      return result;
-    } else {
-      console.warn('Apps script response error:', result?.message);
-    }
-  } catch (error) {
-    console.warn('Google Apps Script endpoint warning, using client-side fallback:', error);
+  if (!response.ok) {
+    throw new Error(`Google Apps Script Web App returned HTTP status ${response.status}`);
   }
-  return null;
+
+  const result = await response.json();
+
+  if (!result || result.status !== 'success') {
+    throw new Error(result?.message || 'Google Apps Script failed to generate presentation PDF.');
+  }
+
+  return result;
 }
