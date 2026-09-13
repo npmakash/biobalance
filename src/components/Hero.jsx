@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, ArrowRight, Shield, Presentation, FileText, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, FileText, Zap, ShieldCheck } from 'lucide-react';
 
 export default function Hero({ onStartPlanning }) {
   return (
@@ -8,7 +8,7 @@ export default function Hero({ onStartPlanning }) {
         {/* Floating Badge */}
         <div style={heroStyles.badge} className="animate-slide-up">
           <Sparkles size={16} color="var(--accent-green)" />
-          <span>Powered by Google Gemini AI & Presentation PDF Engine</span>
+          <span>Powered by Artificial Doctor</span>
         </div>
 
         {/* Main Heading */}
@@ -18,7 +18,7 @@ export default function Hero({ onStartPlanning }) {
 
         {/* Subtitle */}
         <p style={heroStyles.subheading} className="animate-slide-up">
-          Intelligent personalized diet planning tailored to your exact health profile, lab reports, and lifestyle goals. Pure client-side precision, ready for instant PDF export.
+          Intelligent personalized diet planning tailored to your exact health profile, lab reports, and lifestyle goals. Clinical precision powered by Artificial Intelligence.
         </p>
 
         {/* Primary CTA Button */}
@@ -36,18 +36,18 @@ export default function Hero({ onStartPlanning }) {
               <Sparkles size={22} color="var(--primary-emerald)" />
             </div>
             <div>
-              <h4 style={heroStyles.featureTitle}>Gemini AI Integration</h4>
-              <p style={heroStyles.featureDesc}>Generates structured presentation data with exact template placeholder matching.</p>
+              <h4 style={heroStyles.featureTitle}>AI Doctor Precision</h4>
+              <p style={heroStyles.featureDesc}>Generates personalized bio-nutritional protocols tailored to your body.</p>
             </div>
           </div>
 
           <div style={heroStyles.featureCard}>
             <div style={heroStyles.iconWrap}>
-              <Presentation size={22} color="var(--primary-emerald)" />
+              <Zap size={22} color="var(--primary-emerald)" />
             </div>
             <div>
-              <h4 style={heroStyles.featureTitle}>Google Slides Template</h4>
-              <p style={heroStyles.featureDesc}>Visual 16:9 slide report layout with real-time dynamic placeholder mapping.</p>
+              <h4 style={heroStyles.featureTitle}>Instant Diet Plan</h4>
+              <p style={heroStyles.featureDesc}>Instant personalized diet plan generated from your health intake and medical lab reports.</p>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ export default function Hero({ onStartPlanning }) {
 
 const heroStyles = {
   section: {
-    padding: '3.5rem 0 2.5rem 0',
+    padding: '3rem 0 2.5rem 0',
     textAlign: 'center',
     background: 'radial-gradient(circle at 50% 20%, rgba(220, 252, 231, 0.45) 0%, rgba(246, 250, 247, 0) 70%)',
   },
@@ -86,30 +86,30 @@ const heroStyles = {
     padding: '0.45rem 1.1rem',
     borderRadius: 'var(--radius-full)',
     fontSize: '0.88rem',
-    fontWeight: '600',
+    fontWeight: '700',
     color: 'var(--primary-emerald)',
     marginBottom: '1.5rem',
   },
   heading: {
-    fontSize: 'clamp(2.3rem, 5vw, 3.8rem)',
+    fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
     maxWidth: '840px',
     lineHeight: '1.15',
     marginBottom: '1.2rem',
   },
   subheading: {
-    fontSize: '1.15rem',
+    fontSize: '1.1rem',
     color: 'var(--text-muted)',
     maxWidth: '680px',
     marginBottom: '2rem',
     lineHeight: '1.6',
   },
   ctaGroup: {
-    marginBottom: '3.5rem',
+    marginBottom: '3rem',
   },
   featuresGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '1.5rem',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+    gap: '1.25rem',
     width: '100%',
     marginTop: '1rem',
   },
@@ -118,7 +118,7 @@ const heroStyles = {
     alignItems: 'flex-start',
     gap: '1rem',
     backgroundColor: '#FFFFFF',
-    padding: '1.4rem',
+    padding: '1.35rem',
     borderRadius: '16px',
     border: '1px solid var(--border-green)',
     boxShadow: 'var(--shadow-sm)',
@@ -127,7 +127,7 @@ const heroStyles = {
   iconWrap: {
     width: '42px',
     height: '42px',
-    borderRadius: '10px',
+    borderRadius: '12px',
     backgroundColor: 'var(--bg-emerald-light)',
     display: 'flex',
     alignItems: 'center',
@@ -141,8 +141,8 @@ const heroStyles = {
     color: 'var(--text-dark)',
   },
   featureDesc: {
-    fontSize: '0.88rem',
+    fontSize: '0.86rem',
     color: 'var(--text-muted)',
-    lineHeight: '1.4',
+    lineHeight: '1.45',
   },
 };

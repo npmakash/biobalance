@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Key, ShieldCheck, X, Sparkles, AlertCircle } from 'lucide-react';
+import { Settings, ShieldCheck, X, Sparkles, Key, Link } from 'lucide-react';
 
 export default function ApiKeyModal({ isOpen, onClose, onSave }) {
   const [apiKey, setApiKey] = useState('');
+  const [appScriptUrl, setAppScriptUrl] = useState('');
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const existing = localStorage.getItem('biobalance_gemini_key');
-    if (existing) {
-      setApiKey(existing);
-    }
+    const existingKey = localStorage.getItem('biobalance_gemini_key');
+    if (existingKey) setApiKey(existingKey);
+
+    const existingUrl = localStorage.getItem('biobalance_apps_script_url');
+    if (existingUrl) setAppScriptUrl(existingUrl);
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    localStorage.setItem('biobalance_gemini_key', apiKey.trim());
+    if (apiKey.trim()) {
+      localStorage.setItem('biobalance_gemini_key', apiKey.trim());
+    } else {
+      localStorage.removeItem('biobalance_gemini_key');
+    }
+
+    if (appScriptUrl.trim()) {
+      localStorage.setItem('biobalance_apps_script_url', appScriptUrl.trim());
+    } else {
+      localStorage.removeItem('biobalance_apps_script_url');
+    }
+
     setSaved(true);
     if (onSave) onSave(apiKey.trim());
     setTimeout(() => {
@@ -24,32 +37,27 @@ export default function ApiKeyModal({ isOpen, onClose, onSave }) {
     }, 800);
   };
 
-  const handleClear = () => {
-    localStorage.removeItem('biobalance_gemini_key');
-    setApiKey('');
-    if (onSave) onSave('');
-  };
-
   return (
     <div style={modalStyles.overlay}>
       <div style={modalStyles.modalCard} className="animate-drop-in">
         <div style={modalStyles.header}>
           <div style={modalStyles.headerTitle}>
-            <Key size={22} color="var(--accent-green)" />
-            <h3>Google Gemini API Settings</h3>
+            <Settings size={22} color="var(--primary-emerald)" />
+            <h3>BioBalance Application Settings</h3>
           </div>
           <button style={modalStyles.closeBtn} onClick={onClose}>
             <X size={20} />
           </button>
         </div>
 
-        <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', marginBottom: '1.2rem' }}>
-          BioBalance uses Google Gemini to generate custom diet plans. Enter your API key below or test with our built-in demo model.
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+          Configure your personal AI Doctor API Key or custom Google Apps Script endpoint.
         </p>
 
         <div className="form-group">
           <label className="form-label">
-            Gemini API Key
+            <Key size={16} color="var(--primary-emerald)" />
+            AI Doctor API Key (Google AI Studio Key)
           </label>
           <input
             type="password"
@@ -58,29 +66,37 @@ export default function ApiKeyModal({ isOpen, onClose, onSave }) {
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
           />
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', marginTop: '0.25rem' }}>
+            Free API keys start with <code>AIzaSy...</code> from Google AI Studio.
+          </span>
+        </div>
+
+        <div className="form-group" style={{ marginTop: '1rem' }}>
+          <label className="form-label">
+            <Link size={16} color="var(--primary-emerald)" />
+            Google Apps Script Web App Endpoint
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="https://script.google.com/macros/s/.../exec"
+            value={appScriptUrl}
+            onChange={(e) => setAppScriptUrl(e.target.value)}
+          />
         </div>
 
         {saved && (
           <div style={modalStyles.alertSuccess}>
-            <ShieldCheck size={18} /> API Key saved securely in your browser!
+            <ShieldCheck size={18} /> Settings saved successfully in your browser!
           </div>
         )}
 
-        <div style={modalStyles.notice}>
-          <Sparkles size={16} color="var(--primary-emerald)" />
-          <span>
-            No key? Don't worry! BioBalance includes realistic AI simulation fallback mode so you can generate diet plans immediately.
-          </span>
-        </div>
-
         <div style={modalStyles.actions}>
-          {apiKey && (
-            <button className="btn btn-secondary" onClick={handleClear} style={{ padding: '0.6rem 1.1rem', fontSize: '0.9rem' }}>
-              Clear Key
-            </button>
-          )}
+          <button className="btn btn-secondary" onClick={onClose} style={{ padding: '0.65rem 1.1rem', fontSize: '0.9rem' }}>
+            Cancel
+          </button>
           <button className="btn btn-primary" onClick={handleSave} style={{ flex: 1 }}>
-            {saved ? 'Saved!' : 'Save & Continue'}
+            {saved ? 'Saved!' : 'Save Settings'}
           </button>
         </div>
       </div>
@@ -95,8 +111,9 @@ const modalStyles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
-    backdropFilter: 'blur(6px)',
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -106,7 +123,7 @@ const modalStyles = {
   modalCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: '20px',
-    maxWidth: '480px',
+    maxWidth: '500px',
     width: '100%',
     padding: '1.8rem',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -141,21 +158,11 @@ const modalStyles = {
     fontSize: '0.9rem',
     fontWeight: '600',
     marginBottom: '1rem',
-  },
-  notice: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '0.6rem',
-    backgroundColor: 'var(--bg-emerald-light)',
-    padding: '0.85rem 1rem',
-    borderRadius: '12px',
-    fontSize: '0.85rem',
-    color: 'var(--primary-emerald)',
-    marginBottom: '1.5rem',
-    lineHeight: '1.4',
+    marginTop: '0.5rem',
   },
   actions: {
     display: 'flex',
     gap: '0.75rem',
+    marginTop: '1.5rem',
   },
 };

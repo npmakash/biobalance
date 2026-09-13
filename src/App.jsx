@@ -22,7 +22,7 @@ export default function App() {
     }
   };
 
-  // Submit dynamic questionnaire data to Gemini API
+  // Submit dynamic questionnaire data to Gemini AI Doctor
   const handleQuestionnaireSubmit = async (formData) => {
     setUserData(formData);
     setIsGenerating(true);
@@ -52,8 +52,8 @@ export default function App() {
         }
       }, 300);
     } catch (err) {
-      console.error('Gemini API Error:', err);
-      setGeminiError(err.message || 'Failed to generate diet plan from Gemini API.');
+      console.error('AI Doctor Error:', err);
+      setGeminiError(err.message || 'Failed to generate diet plan from AI Doctor service.');
     } finally {
       setIsGenerating(false);
     }
@@ -77,13 +77,13 @@ export default function App() {
           />
         </div>
 
-        {/* Explicit Gemini API Error Alert */}
+        {/* Explicit AI Doctor API Error Alert */}
         {geminiError && (
           <div className="container" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
             <div style={appStyles.geminiErrorBox} className="animate-drop-in">
               <AlertTriangle size={24} color="#DC2626" />
               <div>
-                <strong style={{ fontSize: '1.05rem', color: '#991B1B' }}>Gemini API Execution Error</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#991B1B' }}>AI Doctor Execution Notice</strong>
                 <p style={{ fontSize: '0.92rem', color: '#7F1D1D', marginTop: '0.25rem', lineHeight: '1.4' }}>
                   {geminiError}
                 </p>
@@ -93,7 +93,7 @@ export default function App() {
                     onClick={() => setIsKeyModalOpen(true)}
                     style={{ marginTop: '0.75rem', fontSize: '0.85rem', padding: '0.5rem 1rem' }}
                   >
-                    Set Gemini API Key Now
+                    Open Settings to Enter API Key
                   </button>
                 )}
               </div>
@@ -118,18 +118,15 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Leaf size={20} color="var(--primary-emerald)" />
             <span style={{ fontWeight: '700', color: 'var(--primary-emerald)' }}>BioBalance</span>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-subtle)' }}>
-              • Zero Backend GitHub Pages Ready
-            </span>
           </div>
 
           <p style={{ fontSize: '0.85rem', color: 'var(--text-subtle)' }}>
-            Empowering individual metabolic health with Google Gemini AI.
+            Empowering individual metabolic health with Artificial Intelligence.
           </p>
         </div>
       </footer>
 
-      {/* API Key Modal */}
+      {/* Settings Modal */}
       <ApiKeyModal
         isOpen={isKeyModalOpen}
         onClose={() => setIsKeyModalOpen(false)}

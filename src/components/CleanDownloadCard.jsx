@@ -15,7 +15,7 @@ export default function CleanDownloadCard({ userName, aiData }) {
     setErrorMessage(null);
 
     try {
-      // Call Google Apps Script Web App to duplicate presentation and replace 24 placeholders
+      // Call Google Apps Script Web App to duplicate presentation and replace placeholders
       const googleResult = await generateGoogleSlidePdf(aiData);
 
       if (googleResult && googleResult.status === 'success') {
@@ -45,7 +45,7 @@ export default function CleanDownloadCard({ userName, aiData }) {
         throw new Error(googleResult?.message || 'Google Apps Script failed to process presentation PDF.');
       }
     } catch (err) {
-      console.error('Error generating Google Presentation PDF:', err);
+      console.error('Error generating Presentation PDF:', err);
       setErrorMessage(err.message || 'Failed to replace presentation placeholders on Google Apps Script.');
     } finally {
       setIsExporting(false);
@@ -62,7 +62,7 @@ export default function CleanDownloadCard({ userName, aiData }) {
 
         <h2 style={cardStyles.title}>Your Personalized Diet Report is Ready</h2>
         <p style={cardStyles.subtitle}>
-          Gemini AI has processed your assessment and generated all 24 presentation placeholders.
+          Our Artificial Doctor has processed your assessment and generated your personalized diet plan.
         </p>
 
         {/* Error Notification Banner */}
@@ -70,7 +70,7 @@ export default function CleanDownloadCard({ userName, aiData }) {
           <div style={cardStyles.errorNotice}>
             <AlertTriangle size={20} color="#DC2626" />
             <div>
-              <strong>Slide Generation Error:</strong>
+              <strong>Report Generation Notice:</strong>
               <p style={{ fontSize: '0.88rem', marginTop: '0.2rem' }}>{errorMessage}</p>
             </div>
           </div>
@@ -80,7 +80,7 @@ export default function CleanDownloadCard({ userName, aiData }) {
         {isSuccess && (
           <div style={cardStyles.successNotice}>
             <CheckCircle size={20} color="var(--primary-emerald)" />
-            <span>Google Presentation copied & PDF downloaded successfully!</span>
+            <span>Diet report compiled & PDF downloaded successfully!</span>
           </div>
         )}
 
@@ -109,7 +109,7 @@ export default function CleanDownloadCard({ userName, aiData }) {
             {isExporting ? (
               <>
                 <Loader2 size={24} className="animate-spin" />
-                <span>Replacing Placeholders on Google Drive...</span>
+                <span>Replacing Placeholders & Compiling PDF...</span>
               </>
             ) : (
               <>

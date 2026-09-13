@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Leaf, Key, Sparkles, ShieldCheck } from 'lucide-react';
+import React from 'react';
+import { Leaf, Settings } from 'lucide-react';
 
-export default function Navbar({ onOpenKeyModal, onScrollToSection }) {
-  const [hasKey, setHasKey] = useState(false);
-
-  useEffect(() => {
-    const key = localStorage.getItem('biobalance_gemini_key');
-    setHasKey(!!key);
-  }, []);
-
+export default function Navbar({ onOpenKeyModal }) {
   return (
     <header style={navStyles.header}>
       <div className="container" style={navStyles.container}>
@@ -21,24 +14,19 @@ export default function Navbar({ onOpenKeyModal, onScrollToSection }) {
             <h1 style={navStyles.brandTitle}>
               Bio<span style={{ color: 'var(--accent-green)' }}>Balance</span>
             </h1>
-            <span style={navStyles.brandSubtitle}>AI Diet & Health Precision</span>
+            <span style={navStyles.brandSubtitle}>AI Health Precision</span>
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* Action Controls - Clean Settings Gear Button */}
         <div style={navStyles.actionsGroup}>
-          <button style={navStyles.keyButton} onClick={onOpenKeyModal}>
-            {hasKey ? (
-              <>
-                <ShieldCheck size={16} color="var(--accent-green)" />
-                <span>Gemini API Active</span>
-              </>
-            ) : (
-              <>
-                <Key size={16} color="var(--primary-emerald)" />
-                <span>Gemini API Key</span>
-              </>
-            )}
+          <button
+            style={navStyles.settingsButton}
+            onClick={onOpenKeyModal}
+            title="BioBalance Settings"
+          >
+            <Settings size={20} color="var(--primary-emerald)" />
+            <span style={navStyles.settingsText}>Settings</span>
           </button>
         </div>
       </div>
@@ -51,7 +39,7 @@ const navStyles = {
     position: 'sticky',
     top: 0,
     zIndex: 100,
-    backgroundColor: 'rgba(246, 250, 247, 0.85)',
+    backgroundColor: 'rgba(246, 250, 247, 0.92)',
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
     borderBottom: '1px solid rgba(187, 247, 208, 0.5)',
@@ -69,8 +57,8 @@ const navStyles = {
     cursor: 'pointer',
   },
   logoBadge: {
-    width: '44px',
-    height: '44px',
+    width: '42px',
+    height: '42px',
     borderRadius: '12px',
     background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--accent-green) 100%)',
     display: 'flex',
@@ -86,7 +74,7 @@ const navStyles = {
     color: 'var(--primary-emerald)',
   },
   brandSubtitle: {
-    fontSize: '0.75rem',
+    fontSize: '0.72rem',
     fontWeight: '600',
     color: 'var(--text-subtle)',
     textTransform: 'uppercase',
@@ -95,21 +83,26 @@ const navStyles = {
   actionsGroup: {
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem',
+    gap: '0.75rem',
   },
-  keyButton: {
+  settingsButton: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.45rem',
     padding: '0.55rem 1rem',
     borderRadius: 'var(--radius-full)',
-    backgroundColor: 'var(--bg-card)',
+    backgroundColor: '#FFFFFF',
     border: '1.5px solid var(--border-green)',
-    fontSize: '0.85rem',
+    fontSize: '0.88rem',
     fontWeight: '600',
     color: 'var(--primary-emerald)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     boxShadow: 'var(--shadow-sm)',
+  },
+  settingsText: {
+    '@media (maxWidth: 480px)': {
+      display: 'none',
+    },
   },
 };
