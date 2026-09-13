@@ -1,7 +1,7 @@
 import React from 'react';
-import { Leaf, Settings } from 'lucide-react';
+import { Leaf, Settings, Info, Lock } from 'lucide-react';
 
-export default function Navbar({ onOpenKeyModal }) {
+export default function Navbar({ onOpenKeyModal, onOpenAbout, onOpenPrivacy }) {
   return (
     <header style={navStyles.header}>
       <div className="container" style={navStyles.container}>
@@ -18,15 +18,25 @@ export default function Navbar({ onOpenKeyModal }) {
           </div>
         </div>
 
-        {/* Action Controls - Clean Settings Gear Button */}
+        {/* Action Controls & Navigation Links */}
         <div style={navStyles.actionsGroup}>
+          <button style={navStyles.linkButton} onClick={onOpenAbout}>
+            <Info size={16} color="var(--primary-emerald)" />
+            <span style={navStyles.linkText}>About</span>
+          </button>
+
+          <button style={navStyles.linkButton} onClick={onOpenPrivacy}>
+            <Lock size={16} color="var(--primary-emerald)" />
+            <span style={navStyles.linkText}>Privacy</span>
+          </button>
+
           <button
             style={navStyles.settingsButton}
             onClick={onOpenKeyModal}
             title="BioBalance Settings"
           >
-            <Settings size={20} color="var(--primary-emerald)" />
-            <span style={navStyles.settingsText}>Settings</span>
+            <Settings size={18} color="var(--primary-emerald)" />
+            <span style={navStyles.linkText}>Settings</span>
           </button>
         </div>
       </div>
@@ -83,25 +93,39 @@ const navStyles = {
   actionsGroup: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    gap: '0.6rem',
+  },
+  linkButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    padding: '0.5rem 0.85rem',
+    borderRadius: 'var(--radius-full)',
+    backgroundColor: 'transparent',
+    border: 'none',
+    fontSize: '0.86rem',
+    fontWeight: '600',
+    color: 'var(--primary-emerald)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
   },
   settingsButton: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.45rem',
-    padding: '0.55rem 1rem',
+    gap: '0.35rem',
+    padding: '0.5rem 0.95rem',
     borderRadius: 'var(--radius-full)',
     backgroundColor: '#FFFFFF',
     border: '1.5px solid var(--border-green)',
-    fontSize: '0.88rem',
+    fontSize: '0.86rem',
     fontWeight: '600',
     color: 'var(--primary-emerald)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     boxShadow: 'var(--shadow-sm)',
   },
-  settingsText: {
-    '@media (maxWidth: 480px)': {
+  linkText: {
+    '@media (maxWidth: 520px)': {
       display: 'none',
     },
   },

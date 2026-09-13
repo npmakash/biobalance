@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Calendar, Ruler, Scale, AlertCircle, FileUp, Sparkles, CheckCircle2, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
+import { User, Calendar, AlertCircle, FileUp, Sparkles, CheckCircle2, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
 import { extractTextFromPDF } from '../services/pdfReaderService';
 
 export default function DynamicQuestionnaire({ onSubmit, isGenerating }) {
@@ -90,7 +90,7 @@ export default function DynamicQuestionnaire({ onSubmit, isGenerating }) {
             <span>Interactive Health Intake</span>
           </div>
           <h2 style={qStyles.title}>Personalized BioBalance Assessment</h2>
-          <p style={qStyles.subtitle}>Fill in your details below to generate your custom diet plan & replace Google Presentation placeholders.</p>
+          <p style={qStyles.subtitle}>Fill in your details below to generate your custom personalized diet plan.</p>
         </div>
 
         <form onSubmit={handleSubmitForm} style={qStyles.form}>
@@ -304,14 +304,14 @@ export default function DynamicQuestionnaire({ onSubmit, isGenerating }) {
               {isReadingPdf && (
                 <div style={qStyles.pdfNotice}>
                   <Loader2 size={16} className="animate-spin" color="var(--primary-emerald)" />
-                  <span>Parsing medical report text for Gemini AI analysis...</span>
+                  <span>Parsing medical report text...</span>
                 </div>
               )}
 
               {pdfText && !isReadingPdf && (
                 <div style={qStyles.pdfSuccess}>
                   <CheckCircle2 size={18} color="var(--accent-green)" />
-                  <span>Report text extracted successfully ({pdfText.length} characters ready for Gemini).</span>
+                  <span>Report text extracted successfully ({pdfText.length} characters ready).</span>
                 </div>
               )}
             </div>
@@ -329,11 +329,11 @@ export default function DynamicQuestionnaire({ onSubmit, isGenerating }) {
                 {isGenerating ? (
                   <>
                     <RefreshCw size={22} className="animate-spin" />
-                    <span>Gemini AI is Generating Slide Data...</span>
+                    <span>Diet Plan Preparing...</span>
                   </>
                 ) : (
                   <>
-                    <span>Generate Diet Plan & Replace Slide Placeholders</span>
+                    <span>Generate Diet Plan</span>
                     <ArrowRight size={20} />
                   </>
                 )}

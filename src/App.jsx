@@ -4,11 +4,16 @@ import Hero from './components/Hero';
 import DynamicQuestionnaire from './components/DynamicQuestionnaire';
 import CleanDownloadCard from './components/CleanDownloadCard';
 import ApiKeyModal from './components/ApiKeyModal';
+import AboutModal from './components/AboutModal';
+import PrivacyModal from './components/PrivacyModal';
 import { generateDietPlanWithGemini } from './services/geminiService';
 import { Leaf, AlertTriangle } from 'lucide-react';
 
 export default function App() {
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiData, setAiData] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -62,7 +67,11 @@ export default function App() {
   return (
     <div style={appStyles.appWrapper}>
       {/* Top Navigation */}
-      <Navbar onOpenKeyModal={() => setIsKeyModalOpen(true)} />
+      <Navbar
+        onOpenKeyModal={() => setIsKeyModalOpen(true)}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
+        onOpenPrivacy={() => setIsPrivacyModalOpen(true)}
+      />
 
       {/* Main Content Area */}
       <main>
@@ -120,16 +129,41 @@ export default function App() {
             <span style={{ fontWeight: '700', color: 'var(--primary-emerald)' }}>BioBalance</span>
           </div>
 
+          <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+            <button
+              onClick={() => setIsAboutModalOpen(true)}
+              style={appStyles.footerLink}
+            >
+              About
+            </button>
+            <button
+              onClick={() => setIsPrivacyModalOpen(true)}
+              style={appStyles.footerLink}
+            >
+              Privacy Policy
+            </button>
+          </div>
+
           <p style={{ fontSize: '0.85rem', color: 'var(--text-subtle)' }}>
             Empowering individual metabolic health with Artificial Intelligence.
           </p>
         </div>
       </footer>
 
-      {/* Settings Modal */}
+      {/* Modals */}
       <ApiKeyModal
         isOpen={isKeyModalOpen}
         onClose={() => setIsKeyModalOpen(false)}
+      />
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+      />
+
+      <PrivacyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
       />
     </div>
   );
@@ -167,5 +201,14 @@ const appStyles = {
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: '1rem',
+  },
+  footerLink: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'var(--text-muted)',
+    fontSize: '0.86rem',
+    fontWeight: '600',
+    transition: 'color 0.2s ease',
   },
 };
