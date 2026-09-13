@@ -1,7 +1,7 @@
 import { CONFIG, getDefaultApiKey } from '../config';
 
 /**
- * Gemini API Service supporting both API Keys (AIzaSy...) and Bearer Tokens (AQ... / ya29...)
+ * Gemini API Service supporting both AI Studio Keys (AIzaSy...) and Google Cloud Access Tokens (AQ... / ya29...)
  */
 
 export async function generateDietPlanWithGemini({
@@ -14,16 +14,19 @@ export async function generateDietPlanWithGemini({
   issueDetails,
   pdfReportText,
 }) {
-  const cleanApiKey =
+  const cleanApiKey = (
     apiKey ||
     localStorage.getItem('biobalance_gemini_key') ||
     import.meta.env.VITE_GEMINI_API_KEY ||
     CONFIG.GEMINI_API_KEY ||
     getDefaultApiKey() ||
-    '';
+    ''
+  ).trim();
 
   if (!cleanApiKey) {
-    throw new Error('Gemini API Key is missing. Please click the key icon in the top right header to enter your Google Gemini API Key.');
+    throw new Error(
+      'Gemini API Key is missing. Please click the key icon in the top right header to enter your Google Gemini API Key from https://aistudio.google.com/app/apikey.'
+    );
   }
 
   const reportDateStr = new Date().toLocaleDateString('en-US', {
@@ -87,30 +90,52 @@ CRITICAL: You MUST return ONLY a VALID JSON object matching these EXACT 24 Googl
 }
 `;
 
-  // Detect whether token is Bearer Access Token (AQ... or ya29...) or Standard API Key (AIzaSy...)
+  // Determine token type
   const isBearerToken = cleanApiKey.startsWith('AQ.') || cleanApiKey.startsWith('ya29.');
 
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  // Array of endpoint configurations to try
+  const requestConfigs = [];
 
   if (isBearerToken) {
-    headers['Authorization'] = `Bearer ${cleanApiKey}`;
+    // 1. Bearer token on AI Studio endpoint
+    requestConfigs.push({
+      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cleanApiKey}`,
+      },
+    });
+    requestConfigs.push({
+      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cleanApiKey}`,
+      },
+    });
+    // 2. Query key on AI Studio endpoint as fallback
+    requestConfigs.push({
+      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${cleanApiKey}`,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } else {
+    // Standard API key (AIzaSy...)
+    requestConfigs.push({
+      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${cleanApiKey}`,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    requestConfigs.push({
+      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  // Model endpoints to try in order
-  const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
   let lastError = null;
 
-  for (const modelName of models) {
-    const endpoint = isBearerToken
-      ? `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`
-      : `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanApiKey}`;
-
+  for (const cfg of requestConfigs) {
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(cfg.url, {
         method: 'POST',
-        headers: headers,
+        headers: cfg.headers,
         body: JSON.stringify({
           contents: [
             {
@@ -126,15 +151,22 @@ CRITICAL: You MUST return ONLY a VALID JSON object matching these EXACT 24 Googl
 
       if (!response.ok) {
         const errText = await response.text();
-        let msg = `Gemini API returned error (${response.status})`;
+        let msg = `Gemini API returned HTTP ${response.status}`;
         try {
           const parsedErr = JSON.parse(errText);
           if (parsedErr.error?.message) {
-            msg = `Gemini API Error: ${parsedErr.error.message}`;
+            msg = parsedErr.error.message;
           }
         } catch (_) {}
-        lastError = new Error(msg);
-        continue; // try fallback model if error
+
+        if (msg.includes('invalid authentication credentials') || msg.includes('API_KEY_INVALID')) {
+          lastError = new Error(
+            `Invalid Gemini API Key or Token. Please generate a free Google Gemini API Key (starts with 'AIzaSy...') at https://aistudio.google.com/app/apikey and click the Key icon in top right to paste it.`
+          );
+        } else {
+          lastError = new Error(`Gemini API Error: ${msg}`);
+        }
+        continue;
       }
 
       const data = await response.json();
